@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Surface Tension</title>
+<meta name="description" content="Surface Tension: three songs about an algorithm that sings in your own voice. I. For You, II. Parallel, III. Undertow.">
+<meta property="og:title" content="Surface Tension">
+<meta property="og:description" content="An algorithm sings like a Siren, in your own voice. Three songs, one way back up.">
+<meta property="og:image" content="/media/og.jpg">
+<meta name="theme-color" content="#06090b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&display=swap">
+<style>
+/* Layout: one dark column — film hero, three chapters as stacked tracks, the myth, credits. Cream HUD type over black water. */
+:root{
+  --bg:#06090b; --panel:#0b1215; --line:#1c2a2f; --dim:#6f8189; --fg:#e8e4da; --mute:#a9b3b6; --coral:#e07a6a;
+  --serif:"Instrument Serif", "Times New Roman", serif; --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font-family:var(--mono);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--fg)} a:hover{color:var(--coral)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,4vw,48px)}
+.label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.grain{pointer-events:none;position:fixed;inset:0;z-index:50;opacity:.07;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* top bar */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:linear-gradient(var(--bg),rgba(6,9,11,.0));}
+.bar{display:flex;justify-content:space-between;align-items:center;padding-block:18px;gap:16px}
+.bar nav{display:flex;gap:22px;flex-wrap:wrap}
+.bar a{text-decoration:none;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+#clock{font-variant-numeric:tabular-nums}
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,5vw,72px);align-items:center;padding-block:clamp(24px,6vw,72px)}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(64px,10vw,148px);line-height:.88;letter-spacing:-.01em;margin:18px 0 22px;text-wrap:balance}
+.hero h1 em{display:block;color:var(--mute)}
+.hero p{max-width:46ch;color:var(--mute);margin:0 0 22px}
+.hud{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:12px;color:var(--mute);border-left:1px solid var(--line);padding-left:16px;max-width:420px}
+.hud b{font-weight:400;color:var(--dim)}
+.reel{position:relative;justify-self:end;width:min(100%,400px);aspect-ratio:9/16;border:1px solid var(--line);overflow:hidden;background:#000}
+.reel video{width:100%;height:100%;object-fit:cover;display:block}
+.reel .corner{position:absolute;font-size:10px;letter-spacing:.18em;color:var(--fg);opacity:.75}
+.reel .tl{top:12px;left:14px}.reel .tr{top:12px;right:14px}.reel .bl{bottom:12px;left:14px}
+.reel button{position:absolute;bottom:10px;right:10px;min-width:44px;min-height:44px;background:rgba(6,9,11,.6);border:1px solid var(--line);color:var(--fg);font:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;padding:0 12px}
+/* tracks */
+section{padding-block:clamp(48px,8vw,96px);border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;margin-bottom:34px}
+.sec-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(40px,5vw,64px);margin:0;line-height:1}
+.track{display:grid;grid-template-columns:150px minmax(0,1fr);gap:clamp(18px,3vw,36px);padding-block:26px;border-bottom:1px solid var(--line)}
+.track img{width:150px;height:150px;object-fit:cover;display:block;filter:saturate(.85)}
+.t-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+.t-title{font-family:var(--serif);font-weight:400;font-size:clamp(34px,4vw,52px);line-height:1;margin:6px 0 4px}
+.t-title .num{font-size:.5em;color:var(--dim);margin-right:12px;vertical-align:.45em;font-family:var(--mono);letter-spacing:.1em}
+.t-meta{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.tag{display:inline-block;border:1px solid var(--line);padding:2px 8px;font-size:10px;letter-spacing:.18em;color:var(--mute)}
+.tag.live{border-color:var(--coral);color:var(--coral)}
+.t-line{color:var(--mute);margin:8px 0 14px;max-width:60ch}
+.player{display:flex;align-items:center;gap:16px}
+.play{flex:none;width:52px;height:52px;border-radius:50%;border:1px solid var(--fg);background:transparent;color:var(--fg);cursor:pointer;display:grid;place-items:center}
+.play:hover{border-color:var(--coral);color:var(--coral)}
+.play:focus-visible,.reel button:focus-visible,.wave:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+.wave{flex:1;min-width:0;height:56px;cursor:pointer;display:block}
+.time{flex:none;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;width:92px;text-align:right}
+/* myth */
+.myth{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px)}
+.myth .big{font-family:var(--serif);font-size:clamp(28px,3.4vw,44px);line-height:1.15;margin:0;text-wrap:balance}
+.myth .big i{color:var(--coral);font-style:italic}
+.layers{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.layers li{display:grid;grid-template-columns:44px 1fr auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.layers .n{color:var(--dim)} .layers .w{color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.commands{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.commands span{border:1px solid var(--line);padding:6px 12px;font-size:12px;letter-spacing:.08em}
+footer{border-top:1px solid var(--line);padding-block:32px 48px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--dim);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}.reel{justify-self:start;width:min(100%,360px)}
+  .myth{grid-template-columns:1fr}
+  .track{grid-template-columns:84px minmax(0,1fr)}.track img{width:84px;height:84px}
+  .time{width:auto}
+}
+@media (prefers-reduced-motion:reduce){.grain{display:none}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<header><div class="wrap bar">
+  <span class="label">ST // <span id="clock">00:00:00</span></span>
+  <nav aria-label="Sections"><a href="#tracks">Tracks</a><a href="#film">Film</a><a href="#myth">The myth</a></nav>
+</div></header>
+
+<main>
+<div class="wrap hero" id="film">
+  <div>
+    <div class="label">A myth in three songs · 130 BPM · Phrygian</div>
+    <h1>Surface<em>Tension</em></h1>
+    <p>An algorithm sings like a Siren, in your own voice, only kinder. It pulls you under into a world made of your reflection. The only way back up is to stand still, strip away everything it gave you, and face what is left.</p>
+    <div class="hud">
+      <b>01</b><span>FOR YOU — THE LURE</span>
+      <b>02</b><span>PARALLEL — THE PRISON</span>
+      <b>03</b><span>UNDERTOW — THE SURFACE</span>
+      <b>//</b><span>SIGNAL: <span style="color:var(--coral)">WELCOME</span></span>
+    </div>
+  </div>
+  <figure class="reel" style="margin:0">
+    <video id="reel" src="media/for-you-reel.mp4" poster="media/poster.jpg" muted loop playsinline autoplay preload="metadata" aria-label="For You, music video teaser"></video>
+    <span class="corner tl">I. FOR YOU</span><span class="corner tr">REEL 00:56</span><span class="corner bl">FY—HUD</span>
+    <button id="snd" type="button" aria-pressed="false">SOUND OFF</button>
+  </figure>
+</div>
+
+<section id="tracks"><div class="wrap">
+  <div class="sec-head"><h2>Three chapters</h2><span class="label">Listen in order</span></div>
+  <div id="list"></div>
+</div></section>
+
+<section id="myth"><div class="wrap myth">
+  <div>
+    <div class="label" style="margin-bottom:16px">The myth</div>
+    <p class="big">The surface is the screen. Below it is a perfect copy of the world, and the Siren that lives there was built from <i>your reflection</i>. It never shouts and never quite lies. It only says welcome, for you, and stay.</p>
+    <div class="commands" aria-label="The three commands"><span>Empty your pockets</span><span>Now your head</span><span>Now your face</span></div>
+  </div>
+  <div>
+    <div class="label" style="margin-bottom:16px">Three layers, stripped</div>
+    <ol class="layers">
+      <li><span class="n">01</span><span>Things — what you buy and own</span><span class="w">For You</span></li>
+      <li><span class="n">02</span><span>Thoughts — what it feeds you to want, fear and believe</span><span class="w">Parallel</span></li>
+      <li><span class="n">03</span><span>The face — the self it made for you</span><span class="w">Undertow</span></li>
+      <li><span class="n">//</span><span>Stillness is the one thing it can’t sell.</span><span class="w" style="color:var(--coral)">Exit</span></li>
+    </ol>
+  </div>
+</div></section>
+</main>
+
+<footer class="wrap"><span>Surface Tension · 2026</span><span>Parallel and Undertow: demo versions</span></footer>
+
+<script>
+const TRACKS=[
+ {id:'for-you',n:'I',title:'For You',chapter:'The lure',key:'F phrygian',bpm:131,src:'media/for-you.mp3',art:'media/art-for-you.jpg',status:'Final',line:'The reflection starts singing. Welcome. I made this for you.'},
+ {id:'parallel',n:'II',title:'Parallel',chapter:'The prison',key:'F phrygian',bpm:130,src:'media/parallel-demo.mp3',art:'media/art-parallel.jpg',status:'Demo',line:'Same town, upside down. Every door in here is a picture of a door.'},
+ {id:'undertow',n:'III',title:'Undertow',chapter:'The surface',key:'E phrygian',bpm:130,src:'media/undertow-demo.mp3',art:'media/art-undertow.jpg',status:'Demo',line:'Stand still. The jacket? That’s not you. Oh. That’s you.'}
+];
+const fmt=s=>{s=Math.max(0,s|0);return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const list=document.getElementById('list'); const audios={}; let peaks={};
+const PLAY='<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>';
+const PAUSE='<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="4" y="3" width="3.5" height="12" fill="currentColor"/><rect x="10.5" y="3" width="3.5" height="12" fill="currentColor"/></svg>';
+TRACKS.forEach(t=>{
+  const el=document.createElement('article'); el.className='track';
+  el.innerHTML=`<img src="${t.art}" alt="${t.title}" loading="lazy">
+  <div>
+    <div class="t-top"><span class="t-meta">${t.chapter} · ${t.key} · ${t.bpm} BPM</span><span class="tag ${t.status==='Final'?'live':''}">${t.status.toUpperCase()}</span></div>
+    <h3 class="t-title"><span class="num">${t.n}.</span>${t.title}</h3>
+    <p class="t-line">${t.line}</p>
+    <div class="player">
+      <button class="play" type="button" aria-label="Play ${t.title}">${PLAY}</button>
+      <canvas class="wave" tabindex="0" role="slider" aria-label="Seek ${t.title}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
+      <span class="time">00:00 / --:--</span>
+    </div>
+  </div>`;
+  list.appendChild(el);
+  const a=new Audio(); a.preload='none'; a.src=t.src; audios[t.id]=a;
+  const btn=el.querySelector('.play'), cv=el.querySelector('.wave'), tm=el.querySelector('.time');
+  const draw=()=>{
+    const r=cv.getBoundingClientRect(), dpr=devicePixelRatio||1; cv.width=r.width*dpr; cv.height=r.height*dpr;
+    const c=cv.getContext('2d'); c.scale(dpr,dpr); const p=(peaks[t.id]||{}).peaks||[]; const dur=a.duration||(peaks[t.id]||{}).dur||1;
+    const prog=a.currentTime/dur, n=p.length||1, w=r.width/n;
+    for(let i=0;i<n;i++){const h=Math.max(2,(p[i]||0)*r.height*.9); c.fillStyle=(i/n<prog)?'#e07a6a':'#33454b'; c.fillRect(i*w,(r.height-h)/2,Math.max(1,w-1.5),h)}
+    tm.textContent=fmt(a.currentTime)+' / '+fmt(dur); cv.setAttribute('aria-valuenow',Math.round(prog*100));
+  };
+  t.draw=draw;
+  btn.onclick=()=>{ if(a.paused){Object.values(audios).forEach(x=>{if(x!==a)x.pause()}); a.play()} else a.pause() };
+  a.onplay=()=>{btn.innerHTML=PAUSE;btn.setAttribute('aria-label','Pause '+t.title);loop()};
+  a.onpause=a.onended=()=>{btn.innerHTML=PLAY;btn.setAttribute('aria-label','Play '+t.title);draw()};
+  a.onloadedmetadata=draw;
+  const seek=x=>{const r=cv.getBoundingClientRect();const d=a.duration||(peaks[t.id]||{}).dur;if(!d)return;a.currentTime=Math.min(d,Math.max(0,(x-r.left)/r.width*d));draw()};
+  cv.addEventListener('click',e=>{if(a.readyState<1){a.load();a.addEventListener('loadedmetadata',()=>seek(e.clientX),{once:true})}else seek(e.clientX)});
+  cv.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){a.currentTime+=5;draw()} if(e.key==='ArrowLeft'){a.currentTime-=5;draw()}});
+  const loop=()=>{draw(); if(!a.paused) requestAnimationFrame(loop)};
+});
+fetch('media/peaks.json').then(r=>r.json()).then(j=>{peaks=j;TRACKS.forEach(t=>t.draw())}).catch(()=>{});
+addEventListener('resize',()=>TRACKS.forEach(t=>t.draw&&t.draw()));
+// one song plays after another, like an album
+TRACKS.forEach((t,i)=>{audios[t.id].addEventListener('ended',()=>{const nx=TRACKS[i+1]; if(nx) audios[nx.id].play()})});
+// reel sound toggle: unmuting the film pauses the tracks
+const reel=document.getElementById('reel'), snd=document.getElementById('snd');
+snd.onclick=()=>{reel.muted=!reel.muted; if(!reel.muted){Object.values(audios).forEach(x=>x.pause()); reel.currentTime=0; reel.play()} snd.textContent=reel.muted?'SOUND OFF':'SOUND ON'; snd.setAttribute('aria-pressed',String(!reel.muted))};
+// running timecode in the bar
+const t0=performance.now(), clock=document.getElementById('clock');
+setInterval(()=>{const s=(performance.now()-t0)/1000;clock.textContent=fmt(s)+':'+String(Math.floor((s%1)*24)).padStart(2,'0')},1000/24);
+</script>
+</body>
+</html>
