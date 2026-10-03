@@ -44,6 +44,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:li
 .reel video{width:100%;height:100%;object-fit:cover;display:block}
 .reel .corner{position:absolute;font-size:10px;letter-spacing:.18em;color:var(--fg);opacity:.75}
 .reel .tl{top:12px;left:14px}.reel .tr{top:12px;right:14px}.reel .bl{bottom:12px;left:14px}
+.reel .reels{position:absolute;bottom:10px;left:10px;display:flex;gap:6px}.reel .reels button{position:static;min-width:44px}.reel .reels button[aria-pressed="true"]{border-color:var(--coral);color:var(--coral)}
 .reel button{position:absolute;bottom:10px;right:10px;min-width:44px;min-height:44px;background:rgba(6,9,11,.6);border:1px solid var(--line);color:var(--fg);font:inherit;font-size:11px;letter-spacing:.14em;cursor:pointer;padding:0 12px}
 /* tracks */
 section{padding-block:clamp(48px,8vw,96px);border-top:1px solid var(--line)}
@@ -112,8 +113,9 @@ footer{border-top:1px solid var(--line);padding-block:32px 48px;display:flex;jus
     </div>
   </div>
   <figure class="reel" style="margin:0">
-    <video id="reel" src="media/for-you-reel.mp4" poster="media/poster.jpg" muted loop playsinline autoplay preload="metadata" aria-label="For You, music video teaser"></video>
-    <span class="corner tl">I. FOR YOU</span><span class="corner tr">REEL 00:56</span><span class="corner bl">FY—HUD</span>
+    <video id="reel" src="media/parallel-reel.mp4" poster="media/poster-parallel.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Parallel, music video teaser"></video>
+    <span class="corner tl" id="reel-tl">II. PARALLEL</span><span class="corner tr" id="reel-tr">REEL 00:52</span>
+    <div class="reels" role="group" aria-label="Choose film"><button type="button" data-r="0" aria-pressed="false">I</button><button type="button" data-r="1" aria-pressed="true">II</button></div>
     <button id="snd" type="button" aria-pressed="false">SOUND OFF</button>
   </figure>
 </div>
@@ -141,12 +143,12 @@ footer{border-top:1px solid var(--line);padding-block:32px 48px;display:flex;jus
 </div></section>
 </main>
 
-<footer class="wrap"><span>Surface Tension · 2026</span><span>II and III drop on Instagram</span></footer>
+<footer class="wrap"><span>Surface Tension · 2026</span><span>III drops on Instagram</span></footer>
 
 <script>
 const TRACKS=[
  {id:'for-you',n:'I',title:'For You',chapter:'The lure',key:'F phrygian',bpm:131,src:'media/for-you.mp3',art:'media/art-for-you.jpg',status:'Final',line:'The reflection starts singing. Welcome. I made this for you.'},
- {id:'parallel',n:'II',title:'Parallel',chapter:'The prison',key:'F phrygian',bpm:130,src:null,art:'media/art-parallel.jpg',status:'Soon',locked:true,line:'Same town, upside down. Every door in here is a picture of a door.'},
+ {id:'parallel',n:'II',title:'Parallel',chapter:'The prison',key:'F phrygian',bpm:129,src:'media/parallel.mp3',art:'media/art-parallel.jpg',status:'Final',line:'Same town, upside down. Every door in here is a picture of a door.'},
  {id:'undertow',n:'III',title:'Undertow',chapter:'The surface',key:'E phrygian',bpm:130,src:null,art:'media/art-undertow.jpg',status:'Soon',locked:true,line:'Stand still. The jacket? That’s not you. Oh. That’s you.'}
 ];
 const fmt=s=>{s=Math.max(0,s|0);return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
@@ -196,6 +198,11 @@ addEventListener('resize',()=>TRACKS.forEach(t=>t.draw&&t.draw()));
 TRACKS.forEach((t,i)=>{if(audios[t.id])audios[t.id].addEventListener('ended',()=>{const nx=TRACKS[i+1]; if(nx&&audios[nx.id]) audios[nx.id].play()})});
 // reel sound toggle: unmuting the film pauses the tracks
 const reel=document.getElementById('reel'), snd=document.getElementById('snd');
+const FILMS=[{src:'media/for-you-reel.mp4',poster:'media/poster.jpg',tl:'I. FOR YOU',tr:'REEL 00:56',label:'For You'},{src:'media/parallel-reel.mp4',poster:'media/poster-parallel.jpg',tl:'II. PARALLEL',tr:'REEL 00:52',label:'Parallel'}];
+document.querySelectorAll('.reels button').forEach(b=>b.onclick=()=>{const f=FILMS[+b.dataset.r]; if(reel.getAttribute('src')===f.src)return;
+  reel.poster=f.poster; reel.src=f.src; reel.setAttribute('aria-label',f.label+', music video teaser'); reel.play().catch(()=>{});
+  document.getElementById('reel-tl').textContent=f.tl; document.getElementById('reel-tr').textContent=f.tr;
+  document.querySelectorAll('.reels button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
 snd.onclick=()=>{reel.muted=!reel.muted; if(!reel.muted){Object.values(audios).forEach(x=>x.pause()); reel.currentTime=0; reel.play()} snd.textContent=reel.muted?'SOUND OFF':'SOUND ON'; snd.setAttribute('aria-pressed',String(!reel.muted))};
 // running timecode in the bar
 const t0=performance.now(), clock=document.getElementById('clock');
