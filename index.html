@@ -148,7 +148,7 @@ footer{border-top:1px solid var(--line);padding-block:32px 48px;display:flex;jus
 <script>
 const TRACKS=[
  {id:'for-you',n:'I',title:'For You',chapter:'The lure',key:'F phrygian',bpm:131,src:'media/for-you.mp3',art:'media/art-for-you.jpg',status:'Final',line:'The reflection starts singing. Welcome. I made this for you.'},
- {id:'parallel',n:'II',title:'Parallel',chapter:'The prison',key:'F phrygian',bpm:129,src:'media/parallel.mp3',art:'media/art-parallel.jpg',status:'Final',line:'Same town, upside down. Every door in here is a picture of a door.'},
+ {id:'parallel',n:'II',title:'Parallel',chapter:'The prison',key:'F phrygian',bpm:129,src:'media/parallel.mp3',art:'media/art-parallel-2.jpg',status:'Final',line:'Same town, upside down. Every door in here is a picture of a door.'},
  {id:'undertow',n:'III',title:'Undertow',chapter:'The surface',key:'E phrygian',bpm:130,src:null,art:'media/art-undertow.jpg',status:'Soon',locked:true,line:'Stand still. The jacket? That’s not you. Oh. That’s you.'}
 ];
 const fmt=s=>{s=Math.max(0,s|0);return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
@@ -192,7 +192,7 @@ TRACKS.forEach(t=>{
   cv.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){a.currentTime+=5;draw()} if(e.key==='ArrowLeft'){a.currentTime-=5;draw()}});
   const loop=()=>{draw(); if(!a.paused) requestAnimationFrame(loop)};
 });
-fetch('media/peaks.json').then(r=>r.json()).then(j=>{peaks=j;TRACKS.forEach(t=>t.draw())}).catch(()=>{});
+fetch('media/peaks-2.json').then(r=>r.json()).then(j=>{peaks=j;TRACKS.forEach(t=>t.draw())}).catch(()=>{});
 addEventListener('resize',()=>TRACKS.forEach(t=>t.draw&&t.draw()));
 // one song plays after another, like an album
 TRACKS.forEach((t,i)=>{if(audios[t.id])audios[t.id].addEventListener('ended',()=>{const nx=TRACKS[i+1]; if(nx&&audios[nx.id]) audios[nx.id].play()})});
